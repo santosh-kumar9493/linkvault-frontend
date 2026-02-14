@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
-const API_BASE = "http://localhost:5000";
 
 export default function ViewPage() {
   const { id } = useParams();

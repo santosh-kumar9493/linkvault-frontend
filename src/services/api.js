@@ -1,4 +1,7 @@
-const API_BASE = "https://linkvault-backend-production-f489.up.railway.app";
+const API_BASE = import.meta.env.VITE_API_BASE;
+
+export default API_BASE;
+
 
 export const uploadContent = async (formData) => {
   const res = await fetch(`${API_BASE}/api/upload`, {

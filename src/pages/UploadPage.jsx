@@ -25,7 +25,9 @@ export default function UploadPage() {
       setLoading(true);
       const res = await uploadContent(formData);
       const id = res.link.split("/").pop();
-      setLink(`http://localhost:5173/view/${id}`);
+      const frontendBase = window.location.origin;
+      const link = `${frontendBase}/view/${response.linkId}`;
+      setLink(link);
     } catch (err) {
         setLink("");
         alert(err.message || "Upload failed");
