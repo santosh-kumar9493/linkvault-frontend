@@ -12,8 +12,18 @@ export default function UploadPage() {
 
   const upload = async () => {
     try {
-      if (mode === "file" && file && file.size > 5 * 1024 * 1024) {
+      if (mode === "file" && !file) {
+        toast.error("Select a file first");
+        return;
+      }
+
+      if (mode === "file" && file.size > 5 * 1024 * 1024) {
         toast.error("Max file size is 5MB");
+        return;
+      }
+
+      if (mode === "text" && !text.trim()) {
+        toast.error("Enter text first");
         return;
       }
 
@@ -40,25 +50,25 @@ export default function UploadPage() {
     }
   };
 
-  const copyLink = async () => {
-    await navigator.clipboard.writeText(link);
-    toast.success("Link copied");
-  };
-
   return (
     <div className="p-6 max-w-xl mx-auto">
       <Toaster />
       <h1 className="text-xl font-bold mb-4">LinkVault</h1>
 
-      <div className="flex mb-4">
+      {/* Toggle */}
+      <div className="flex mb-4 border rounded overflow-hidden">
         <button
-          className="flex-1 border p-2"
+          className={`flex-1 p-2 ${
+            mode === "text" ? "bg-blue-600 text-white" : "bg-gray-100"
+          }`}
           onClick={() => setMode("text")}
         >
           Text
         </button>
         <button
-          className="flex-1 border p-2"
+          className={`flex-1 p-2 ${
+            mode === "file" ? "bg-blue-600 text-white" : "bg-gray-100"
+          }`}
           onClick={() => setMode("file")}
         >
           File
@@ -69,21 +79,17 @@ export default function UploadPage() {
         <textarea
           value={text}
           onChange={(e) => setText(e.target.value)}
-          className="w-full border p-2 mb-3"
           placeholder="Enter text..."
+          className="w-full border p-2 mb-3"
         />
       )}
 
       {mode === "file" && (
-        <div className="mb-3">
-          <input
-            type="file"
-            onChange={(e) => setFile(e.target.files[0])}
-          />
-          <p className="text-xs text-gray-500 mt-1">
-            Max file size: 5MB
-          </p>
-        </div>
+        <input
+          type="file"
+          onChange={(e) => setFile(e.target.files[0])}
+          className="mb-3"
+        />
       )}
 
       <input
@@ -100,29 +106,19 @@ export default function UploadPage() {
           checked={oneTime}
           onChange={(e) => setOneTime(e.target.checked)}
         />{" "}
-        One-time view (self-destruct)
+        One-time view
       </label>
 
       <button
         onClick={upload}
-        className="bg-blue-600 text-white px-4 py-2 rounded"
+        className="bg-blue-600 text-white px-4 py-2 rounded w-full"
       >
         Generate Link
       </button>
 
       {link && (
-        <div className="mt-4 border p-3 relative">
-          <a href={link} className="text-blue-600 break-all">
-            {link}
-          </a>
-
-          <button
-            onClick={copyLink}
-            className="absolute top-2 right-2"
-            title="Copy"
-          >
-            📋
-          </button>
+        <div className="mt-4 border p-3 break-all">
+          <a href={link}>{link}</a>
         </div>
       )}
     </div>
