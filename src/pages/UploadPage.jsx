@@ -41,75 +41,107 @@ export default function UploadPage() {
     }
   };
 
+  const copy = async () => {
+    await navigator.clipboard.writeText(link);
+    toast.success("Copied");
+  };
+
   return (
-    <div className="p-6 max-w-xl mx-auto">
+    <div className="min-h-screen bg-gray-100 flex items-center justify-center p-6">
       <Toaster />
-      <h1 className="text-xl font-bold mb-4">LinkVault</h1>
+      <div className="bg-white shadow-xl rounded-xl p-8 w-full max-w-xl">
+        <h1 className="text-2xl font-bold text-center mb-6">🔐 LinkVault</h1>
 
-      <div className="flex mb-4 border">
-        <button className="flex-1" onClick={() => setMode("text")}>
-          Text
-        </button>
-        <button className="flex-1" onClick={() => setMode("file")}>
-          File
-        </button>
-      </div>
-
-      {mode === "text" && (
-        <textarea
-          className="w-full border p-2 mb-3"
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-        />
-      )}
-
-      {mode === "file" && (
-        <input
-          type="file"
-          className="mb-3"
-          onChange={(e) => setFile(e.target.files[0])}
-        />
-      )}
-
-      <select
-        className="w-full border p-2 mb-3"
-        value={expiry}
-        onChange={(e) => setExpiry(e.target.value)}
-      >
-        <option value="10m">10 minutes</option>
-        <option value="1h">1 hour</option>
-        <option value="24h">24 hours</option>
-      </select>
-
-      <input
-        type="password"
-        placeholder="Optional password"
-        className="w-full border p-2 mb-3"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      />
-
-      <label className="flex items-center gap-2 mb-3">
-        <input
-          type="checkbox"
-          checked={oneTime}
-          onChange={(e) => setOneTime(e.target.checked)}
-        />
-        View only once (self-destruct)
-      </label>
-
-      <button
-        onClick={upload}
-        className="bg-blue-600 text-white px-4 py-2 w-full"
-      >
-        Generate Link
-      </button>
-
-      {link && (
-        <div className="mt-4 border p-3">
-          <a href={link}>{link}</a>
+        {/* Toggle */}
+        <div className="flex border rounded overflow-hidden mb-5">
+          <button
+            className={`flex-1 py-2 ${
+              mode === "text"
+                ? "bg-blue-600 text-white"
+                : "bg-gray-100 hover:bg-gray-200"
+            }`}
+            onClick={() => setMode("text")}
+          >
+            Text
+          </button>
+          <button
+            className={`flex-1 py-2 ${
+              mode === "file"
+                ? "bg-blue-600 text-white"
+                : "bg-gray-100 hover:bg-gray-200"
+            }`}
+            onClick={() => setMode("file")}
+          >
+            File
+          </button>
         </div>
-      )}
+
+        {mode === "text" && (
+          <textarea
+            className="w-full border rounded p-3 mb-4"
+            placeholder="Enter secure text..."
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+          />
+        )}
+
+        {mode === "file" && (
+          <input
+            type="file"
+            className="mb-4"
+            onChange={(e) => setFile(e.target.files[0])}
+          />
+        )}
+
+        <select
+          className="w-full border rounded p-3 mb-4"
+          value={expiry}
+          onChange={(e) => setExpiry(e.target.value)}
+        >
+          <option value="10m">Expires in 10 minutes</option>
+          <option value="1h">Expires in 1 hour</option>
+          <option value="24h">Expires in 24 hours</option>
+        </select>
+
+        <input
+          type="password"
+          placeholder="Optional password"
+          className="w-full border rounded p-3 mb-4"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+
+        <label className="flex items-center gap-2 mb-5 text-sm">
+          <input
+            type="checkbox"
+            checked={oneTime}
+            onChange={(e) => setOneTime(e.target.checked)}
+          />
+          View only once (self-destruct)
+        </label>
+
+        <button
+          onClick={upload}
+          className="w-full bg-blue-600 text-white py-3 rounded hover:bg-blue-700"
+        >
+          Generate Secure Link
+        </button>
+
+        {link && (
+          <div className="mt-5 border rounded p-4 relative bg-gray-50">
+            <a href={link} className="text-blue-600 break-all">
+              {link}
+            </a>
+
+            <button
+              onClick={copy}
+              className="absolute top-2 right-2"
+            >
+              📋
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

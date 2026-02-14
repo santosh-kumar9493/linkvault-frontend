@@ -9,64 +9,51 @@ export default function ViewPage() {
   const [needPassword, setNeedPassword] = useState(false);
   const [error, setError] = useState("");
 
-  const load = async () => {
+  const load = async (pwd = password) => {
     const res = await fetch(`${API_BASE}/content/${id}`, {
-      headers: password ? { "x-link-password": password } : {},
+      headers: pwd ? { "x-link-password": pwd } : {},
     });
 
-    if (res.status === 401) return setNeedPassword(true);
+    if (res.status === 401) {
+      setNeedPassword(true);
+      return;
+    }
 
     const json = await res.json();
-    if (!res.ok) return setError(json.error);
+    if (!res.ok) {
+      setError(json.error || "Failed");
+      return;
+    }
 
     setNeedPassword(false);
     setData(json);
   };
 
   useEffect(() => {
-    load();
+    load("");
   }, []);
 
-  // Expired
   if (error === "Link expired")
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-100">
-        <div className="bg-white shadow-xl rounded-xl p-8 text-center">
-          <h1 className="text-2xl font-bold text-red-500 mb-2">
-            🔒 Link Expired
-          </h1>
-          <p className="text-gray-600 mb-4">
-            This secure content is no longer available.
-          </p>
-          <a
-            href="/"
-            className="bg-blue-600 text-white px-4 py-2 rounded"
-          >
-            Create New Link
-          </a>
-        </div>
+      <div className="min-h-screen flex items-center justify-center">
+        <h1 className="text-red-500 text-xl">Link Expired</h1>
       </div>
     );
 
-  // Password screen
   if (needPassword)
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-100">
-        <div className="bg-white shadow-xl rounded-xl p-8 w-80">
-          <h2 className="text-lg font-semibold mb-3">
-            🔐 Password Required
-          </h2>
-
+        <div className="bg-white shadow rounded p-6 w-80">
+          <h2 className="font-semibold mb-3">🔐 Password Required</h2>
           <input
             type="password"
+            className="w-full border p-2 rounded mb-3"
             placeholder="Enter password"
-            className="w-full border rounded-lg p-2 mb-3"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-
           <button
-            onClick={load}
+            onClick={() => load(password)}
             className="w-full bg-blue-600 text-white py-2 rounded"
           >
             Unlock
@@ -82,50 +69,41 @@ export default function ViewPage() {
       </div>
     );
 
-  // Text preview
   if (data.type === "text")
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-100 p-6">
-        <div className="bg-white shadow-xl rounded-xl p-6 max-w-xl w-full">
-          <pre className="whitespace-pre-wrap">{data.text}</pre>
-
-          <div className="mt-4 text-sm text-gray-500">
-            <p>
-              Expires:{" "}
-              {new Date(data.expiresAt).toLocaleString()}
-            </p>
-            <p>Views: {data.views}</p>
-          </div>
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center p-6">
+        <div className="bg-white shadow rounded p-6 max-w-xl w-full">
+          <pre>{data.text}</pre>
+          <p className="mt-4 text-sm text-gray-500">
+            Expires: {new Date(data.expiresAt).toLocaleString()}
+          </p>
+          <p className="text-sm text-gray-500">Views: {data.views}</p>
         </div>
       </div>
     );
 
-  // File preview
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 p-6">
-      <div className="bg-white shadow-xl rounded-xl p-6 max-w-2xl w-full text-center">
-        <h2 className="font-semibold mb-3">{data.fileName}</h2>
+    <div className="min-h-screen bg-gray-100 flex items-center justify-center p-6">
+      <div className="bg-white shadow rounded p-6 max-w-2xl w-full text-center">
+        <h2 className="mb-3 font-semibold">{data.fileName}</h2>
 
         <iframe
           src={data.previewUrl}
-          className="w-full h-96 border rounded mb-4"
+          className="w-full h-96 border mb-4"
           title="preview"
         />
 
         <a
           href={data.downloadUrl}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded"
+          className="bg-blue-600 text-white px-5 py-2 rounded"
         >
           Download
         </a>
 
-        <div className="mt-4 text-sm text-gray-500">
-          <p>
-            Expires:{" "}
-            {new Date(data.expiresAt).toLocaleString()}
-          </p>
-          <p>Views: {data.views}</p>
-        </div>
+        <p className="mt-4 text-sm text-gray-500">
+          Expires: {new Date(data.expiresAt).toLocaleString()}
+        </p>
+        <p className="text-sm text-gray-500">Views: {data.views}</p>
       </div>
     </div>
   );
