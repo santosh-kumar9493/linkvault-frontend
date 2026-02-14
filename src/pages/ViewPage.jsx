@@ -5,44 +5,42 @@ import API_BASE from "../services/api";
 export default function ViewPage() {
   const { id } = useParams();
   const [data, setData] = useState(null);
+  const [password, setPassword] = useState("");
+  const [needPassword, setNeedPassword] = useState(false);
   const [error, setError] = useState("");
 
+  const load = async () => {
+    const res = await fetch(`${API_BASE}/content/${id}`, {
+      headers: password ? { "x-link-password": password } : {},
+    });
+
+    if (res.status === 401) return setNeedPassword(true);
+
+    const json = await res.json();
+    if (!res.ok) return setError(json.error);
+
+    setData(json);
+  };
+
   useEffect(() => {
-    const load = async () => {
-      const res = await fetch(`${API_BASE}/content/${id}`);
-      const json = await res.json();
-
-      if (!res.ok) {
-        setError(json.error || "Failed");
-        return;
-      }
-      setData(json);
-    };
-
     load();
-  }, [id]);
+  }, []);
 
-  if (error === "Link expired")
+  if (needPassword)
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-100">
-        <div className="bg-white p-8 shadow rounded text-center">
-          <h1 className="text-2xl font-bold text-red-500 mb-3">
-            Link Expired
-          </h1>
-          <p className="text-gray-600 mb-4">
-            This secure link is no longer available.
-          </p>
-          <a
-            href="/"
-            className="bg-blue-600 text-white px-4 py-2 rounded inline-block"
-          >
-            Create New Link
-          </a>
-        </div>
+      <div className="p-6">
+        <h2>Password Required</h2>
+        <input
+          type="password"
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        <button onClick={load}>Unlock</button>
       </div>
     );
 
-  if (error) return <div className="p-6">{error}</div>;
+  if (error === "Link expired")
+    return <div className="p-6">Link Expired</div>;
+
   if (!data) return <div className="p-6">Loading...</div>;
 
   if (data.type === "text")
@@ -52,18 +50,12 @@ export default function ViewPage() {
     <div className="p-6">
       <iframe
         src={data.previewUrl}
-        className="w-full h-96 mb-3 border"
+        className="w-full h-96 border"
         title="preview"
       />
-      <a
-        href={data.downloadUrl}
-        className="bg-blue-600 text-white px-4 py-2 rounded"
-      >
-        Download
-      </a>
-      <p className="mt-3 text-sm text-gray-500">
-        Views: {data.views}
-      </p>
+      <a href={data.downloadUrl}>Download</a>
+      <p>Expires: {new Date(data.expiresAt).toLocaleString()}</p>
+      <p>Views: {data.views}</p>
     </div>
   );
 }
