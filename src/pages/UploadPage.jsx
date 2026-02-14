@@ -24,7 +24,6 @@ export default function UploadPage() {
     try {
       setLoading(true);
       const res = await uploadContent(formData);
-      const id = res.link.split("/").pop();
       const frontendBase = window.location.origin;
       const link = `${frontendBase}/view/${response.linkId}`;
       setLink(link);
