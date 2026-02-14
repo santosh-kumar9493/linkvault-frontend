@@ -19,6 +19,7 @@ export default function ViewPage() {
     const json = await res.json();
     if (!res.ok) return setError(json.error);
 
+    setNeedPassword(false);
     setData(json);
   };
 
@@ -26,36 +27,106 @@ export default function ViewPage() {
     load();
   }, []);
 
-  if (needPassword)
+  // Expired
+  if (error === "Link expired")
     return (
-      <div className="p-6">
-        <h2>Password Required</h2>
-        <input
-          type="password"
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        <button onClick={load}>Unlock</button>
+      <div className="min-h-screen flex items-center justify-center bg-gray-100">
+        <div className="bg-white shadow-xl rounded-xl p-8 text-center">
+          <h1 className="text-2xl font-bold text-red-500 mb-2">
+            🔒 Link Expired
+          </h1>
+          <p className="text-gray-600 mb-4">
+            This secure content is no longer available.
+          </p>
+          <a
+            href="/"
+            className="bg-blue-600 text-white px-4 py-2 rounded"
+          >
+            Create New Link
+          </a>
+        </div>
       </div>
     );
 
-  if (error === "Link expired")
-    return <div className="p-6">Link Expired</div>;
+  // Password screen
+  if (needPassword)
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-100">
+        <div className="bg-white shadow-xl rounded-xl p-8 w-80">
+          <h2 className="text-lg font-semibold mb-3">
+            🔐 Password Required
+          </h2>
 
-  if (!data) return <div className="p-6">Loading...</div>;
+          <input
+            type="password"
+            placeholder="Enter password"
+            className="w-full border rounded-lg p-2 mb-3"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
 
+          <button
+            onClick={load}
+            className="w-full bg-blue-600 text-white py-2 rounded"
+          >
+            Unlock
+          </button>
+        </div>
+      </div>
+    );
+
+  if (!data)
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        Loading...
+      </div>
+    );
+
+  // Text preview
   if (data.type === "text")
-    return <pre className="p-6">{data.text}</pre>;
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-100 p-6">
+        <div className="bg-white shadow-xl rounded-xl p-6 max-w-xl w-full">
+          <pre className="whitespace-pre-wrap">{data.text}</pre>
 
+          <div className="mt-4 text-sm text-gray-500">
+            <p>
+              Expires:{" "}
+              {new Date(data.expiresAt).toLocaleString()}
+            </p>
+            <p>Views: {data.views}</p>
+          </div>
+        </div>
+      </div>
+    );
+
+  // File preview
   return (
-    <div className="p-6">
-      <iframe
-        src={data.previewUrl}
-        className="w-full h-96 border"
-        title="preview"
-      />
-      <a href={data.downloadUrl}>Download</a>
-      <p>Expires: {new Date(data.expiresAt).toLocaleString()}</p>
-      <p>Views: {data.views}</p>
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 p-6">
+      <div className="bg-white shadow-xl rounded-xl p-6 max-w-2xl w-full text-center">
+        <h2 className="font-semibold mb-3">{data.fileName}</h2>
+
+        <iframe
+          src={data.previewUrl}
+          className="w-full h-96 border rounded mb-4"
+          title="preview"
+        />
+
+        <a
+          href={data.downloadUrl}
+          className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded"
+        >
+          Download
+        </a>
+
+        <div className="mt-4 text-sm text-gray-500">
+          <p>
+            Expires:{" "}
+            {new Date(data.expiresAt).toLocaleString()}
+          </p>
+          <p>Views: {data.views}</p>
+        </div>
+      </div>
     </div>
   );
 }
