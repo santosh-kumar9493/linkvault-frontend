@@ -102,8 +102,9 @@ export default function UploadPage() {
         </button>
 
         {link && (
-          <div className="mt-6 bg-gray-50 border rounded-lg p-4 text-center">
+          <div className="mt-6 bg-gray-50 border rounded-lg p-4 relative">
             <p className="text-sm mb-2">Your secure link</p>
+
             <a
               href={link}
               target="_blank"
@@ -113,14 +114,17 @@ export default function UploadPage() {
               {link}
             </a>
 
+            {/* Copy icon top-right */}
             <button
               onClick={copyLink}
-              className="mt-3 bg-gray-800 text-white px-4 py-1 rounded"
+              className="absolute top-2 right-2 text-gray-600 hover:text-black"
+              title="Copy"
             >
-              Copy
+              📋
             </button>
           </div>
         )}
+
       </div>
     </div>
   );
