@@ -1,16 +1,102 @@
-# React + Vite
+# LinkVault 🔐
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Securely share **text or files via temporary links** with expiry, password protection, and self-destruct view.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Live Demo
 
-## React Compiler
+- App: `https://linkvault-frontend.vercel.app/`
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the ESLint configuration
+## Features
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- Upload **text or file**
+- Secure **shareable link**
+- **Expiry-based auto delete**
+- **Password-protected links**
+- **One-time view (self-destruct)**
+- File **preview + download**
+- View counter
+- Drag & Drop upload
+- File size validation
+- Rate limiting (anti-abuse)
+- Logging & health endpoint
+- Clean responsive UI
+
+---
+
+## Tech Stack
+
+### Frontend
+- React (Vite)
+- Tailwind CSS
+- Fetch API
+
+### Backend
+- Node.js
+- Express
+- MongoDB Atlas
+- GridFS (file storage)
+- Multer (upload)
+- bcrypt (password hashing)
+- express-rate-limit
+- morgan logging
+
+### Deployment
+- Frontend → Vercel
+- Backend → Railway
+- Database → MongoDB Atlas
+
+---
+
+## How It Works
+
+1. User uploads text/file  
+2. Backend generates **unique linkId**  
+3. Content stored in MongoDB (GridFS for files)  
+4. Optional:
+   - Expiry time
+   - Password protection
+   - One-time view  
+5. Secure link returned to user  
+6. On access:
+   - Expiry validated
+   - Password validated
+   - View counter updated
+   - File streamed or text returned  
+
+---
+
+## Usage
+
+### Upload
+
+1. Select **Text** or **File**
+2. Enter content or choose file
+3. Choose expiry time
+4. (Optional) Set password
+5. (Optional) Enable **View only once**
+6. Click **Generate Link**
+7. Share generated link
+
+---
+
+### View Content
+
+1. Open link
+2. If password protected → enter password
+3. View content or preview file
+4. Download if needed
+5. If one-time → link expires after first view
+
+---
+
+## Setup (Local)
+
+### Backend
+
+```bash
+cd backend
+npm install
